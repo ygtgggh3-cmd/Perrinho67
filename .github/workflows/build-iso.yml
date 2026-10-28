@@ -19,9 +19,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Construir la ISO
+        shell: bash
         run: |
           chmod +x build.sh
-          ./build.sh
+          set -o pipefail
+          ./build.sh 2>&1 | tee build.log
+
+      - name: Mostrar el error (si falló)
+        if: failure()
+        shell: bash
+        run: |
+          grep -nE "^E:|Error|error:|Unable to locate|failed|Failed|cannot|No such" build.log | tail -25 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
+          echo "::error::ULTIMAS LINEAS: $(tail -15 build.log | tr '\n' '|' | cut -c1-1500)"
 
       - name: Mostrar tamaño de la ISO
         run: ls -lh work/*.iso

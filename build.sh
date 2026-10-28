@@ -34,7 +34,6 @@ cat > config/package-lists/liviano.list.chroot <<'EOF'
 linux-image-amd64
 live-boot
 live-config
-live-config-systemd
 firmware-linux-free
 firmware-linux-nonfree
 firmware-misc-nonfree
