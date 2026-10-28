@@ -29,7 +29,7 @@ jobs:
         if: failure()
         shell: bash
         run: |
-          grep -nE "^E:|Error|error:|Unable to locate|failed|Failed|cannot|No such" build.log | tail -25 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
+          grep -nE "TEMA|WhiteSur.*(rror|ail)|^E:|Error|error:|Unable to locate|failed|Failed|cannot|No such" build.log | tail -25 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
           echo "::error::ULTIMAS LINEAS: $(tail -15 build.log | tr '\n' '|' | cut -c1-1500)"
 
       - name: Mostrar tamaño de la ISO

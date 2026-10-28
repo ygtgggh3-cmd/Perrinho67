@@ -57,6 +57,9 @@ xfce4-settings
 gtk2-engines-murrine
 sassc
 git
+libglib2.0-dev-bin
+libxml2-utils
+libgtk-3-bin
 # Tienda de apps y ahorro de RAM
 flatpak
 gnome-software
@@ -83,12 +86,11 @@ EOF
 mkdir -p config/hooks/live
 cat > config/hooks/live/0100-tema.hook.chroot <<'EOF'
 #!/bin/sh
-set -e
 cd /tmp
-git clone --depth 1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git
-git clone --depth 1 https://github.com/vinceliuice/WhiteSur-icon-theme.git
-(cd WhiteSur-gtk-theme && ./install.sh -d /usr/share/themes -c Light)
-(cd WhiteSur-icon-theme && ./install.sh -d /usr/share/icons)
+git clone --depth 1 https://github.com/vinceliuice/WhiteSur-gtk-theme.git || echo "TEMA: fallo clone gtk"
+git clone --depth 1 https://github.com/vinceliuice/WhiteSur-icon-theme.git || echo "TEMA: fallo clone iconos"
+(cd WhiteSur-gtk-theme && ./install.sh -d /usr/share/themes -c Light) || echo "TEMA: fallo install gtk"
+(cd WhiteSur-icon-theme && ./install.sh -d /usr/share/icons) || echo "TEMA: fallo install iconos"
 rm -rf /tmp/WhiteSur-*
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || true
 # Quitar lo que no se necesita para ahorrar espacio y RAM
