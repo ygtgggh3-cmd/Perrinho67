@@ -1,0 +1,39 @@
+name: Compilar ISO Perrinho67
+
+on:
+  workflow_dispatch:        # botón "Run workflow" manual
+  push:
+    tags: ["v*"]            # también al crear una etiqueta, ej. v0.1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    container:
+      image: debian:trixie
+      options: --privileged
+    steps:
+      - name: Instalar herramientas básicas
+        run: apt-get update && apt-get install -y git ca-certificates
+
+      - uses: actions/checkout@v4
+
+      - name: Construir la ISO
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Mostrar tamaño de la ISO
+        run: ls -lh work/*.iso
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Perrinho67-iso
+          path: work/*.iso
+          retention-days: 14
+
+      - name: Publicar en Releases (solo con etiqueta)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: work/*.iso
