@@ -29,11 +29,19 @@ lb config \
   --chroot-squashfs-compression-type xz
 
 mkdir -p config/package-lists
+if apt-cache show live-config-systemd >/dev/null 2>&1; then
+  echo "live-config-systemd" > config/package-lists/extra-live.list.chroot
+fi
 cat > config/package-lists/liviano.list.chroot <<'EOF'
 # Sistema base
 linux-image-amd64
 live-boot
 live-config
+user-setup
+locales
+tzdata
+keyboard-configuration
+console-setup
 firmware-linux-free
 firmware-linux-nonfree
 firmware-misc-nonfree
@@ -43,7 +51,19 @@ network-manager
 network-manager-gnome
 sudo
 # Escritorio ligero (XFCE sin extras)
+xorg
+xserver-xorg-input-libinput
+xserver-xorg-video-all
+dbus-x11
+polkitd
+pkexec
+udisks2
+gvfs
+gvfs-backends
 xfce4
+xfce4-session
+xfce4-notifyd
+xfce4-appfinder
 xfce4-terminal
 lightdm
 lightdm-gtk-greeter
@@ -113,6 +133,16 @@ cat > "$SKEL/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml" <<'EOF'
     <property name="IconThemeName" type="string" value="WhiteSur"/>
   </property>
 </channel>
+EOF
+
+# Inicio de sesión automático en el escritorio
+mkdir -p config/includes.chroot/etc/lightdm/lightdm.conf.d
+cat > config/includes.chroot/etc/lightdm/lightdm.conf.d/50-perrinho.conf <<'EOF'
+[Seat:*]
+autologin-user=liviano
+autologin-user-timeout=0
+user-session=xfce
+greeter-session=lightdm-gtk-greeter
 EOF
 
 # Dock inferior centrado (estilo barra de Windows 11)
